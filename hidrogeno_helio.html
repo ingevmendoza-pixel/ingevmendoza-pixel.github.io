@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Átomos — Modelo de Bohr</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Rajdhani:wght@500;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f7f4ee;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Crimson Pro', Georgia, serif;
+    color: #222;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  header h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #445;
+  }
+
+  header p {
+    font-style: italic;
+    font-size: 0.95rem;
+    color: #778;
+    margin-top: 4px;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+  }
+
+  .atom-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  canvas { display: block; }
+
+  .caption {
+    font-style: italic;
+    font-size: 0.88rem;
+    color: #556;
+    text-align: center;
+  }
+
+  .caption strong {
+    font-style: normal;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: #334;
+  }
+
+  footer {
+    margin-top: 30px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #aab;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Modelo Atómico de Bohr</h1>
+  <p>Figura 2-2 — Estructura del hidrógeno y el helio</p>
+</header>
+
+<div class="row">
+  <div class="atom-block">
+    <canvas id="h-canvas" width="280" height="280"></canvas>
+    <div class="caption"><strong>a)</strong> Átomo de hidrógeno</div>
+  </div>
+  <div class="atom-block">
+    <canvas id="he-canvas" width="300" height="300"></canvas>
+    <div class="caption"><strong>b)</strong> Átomo de helio</div>
+  </div>
+</div>
+
+<footer>Cada elemento tiene una estructura atómica única</footer>
+
+<script>
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function ellipsePoint(cx, cy, rx, ry, tilt, t) {
+  const x0 = rx * Math.cos(t);
+  const y0 = ry * Math.sin(t);
+  return {
+    x: cx + x0 * Math.cos(tilt) - y0 * Math.sin(tilt),
+    y: cy + x0 * Math.sin(tilt) + y0 * Math.cos(tilt)
+  };
+}
+
+function drawEllipsePath(ctx, cx, cy, rx, ry, tilt) {
+  ctx.beginPath();
+  const steps = 120;
+  for (let i = 0; i <= steps; i++) {
+    const t = (i / steps) * Math.PI * 2;
+    const p = ellipsePoint(cx, cy, rx, ry, tilt, t);
+    i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+  }
+  ctx.closePath();
+}
+
+function drawElectron(ctx, x, y, r) {
+  ctx.save();
+  ctx.shadowColor = 'rgba(60,80,160,0.3)';
+  ctx.shadowBlur = 7;
+  const grad = ctx.createRadialGradient(x - r*0.3, y - r*0.3, r*0.1, x, y, r);
+  grad.addColorStop(0, '#eaf0fb');
+  grad.addColorStop(1, '#7a90c4');
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.strokeStyle = '#3a4a7a';
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawNucleus(ctx, cx, cy, r, plusCount) {
+  ctx.save();
+  ctx.shadowColor = 'rgba(160,40,20,0.25)';
+  ctx.shadowBlur = 10;
+  const grad = ctx.createRadialGradient(cx - r*0.3, cy - r*0.3, r*0.05, cx, cy, r);
+  grad.addColorStop(0, '#fff9f7');
+  grad.addColorStop(1, '#ecc0a8');
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.strokeStyle = '#a02010';
+  ctx.lineWidth = 1.7;
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.fillStyle = '#8a1a08';
+  ctx.font = 'bold 12px "Rajdhani", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  if (plusCount === 1) {
+    ctx.fillText('+', cx, cy);
+  } else {
+    ctx.fillText('+', cx - 5.5, cy);
+    ctx.fillText('+', cx + 5.5, cy);
+  }
+}
+
+function drawLabel(ctx, text, tx, ty, targetX, targetY) {
+  ctx.save();
+  ctx.font = '13px "Crimson Pro", Georgia, serif';
+  ctx.fillStyle = '#334455';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, tx, ty);
+
+  const dx = targetX - tx, dy = targetY - ty;
+  const len = Math.sqrt(dx*dx + dy*dy);
+  const nx = dx / len, ny = dy / len;
+  const startX = tx + nx * 26, startY = ty + ny * 9;
+  const endX   = targetX - nx * 11, endY = targetY - ny * 11;
+
+  ctx.beginPath();
+  ctx.moveTo(startX, startY);
+  ctx.lineTo(endX, endY);
+  ctx.strokeStyle = '#bbc';
+  ctx.lineWidth = 0.8;
+  ctx.stroke();
+  ctx.restore();
+}
+
+// ── HYDROGEN ─────────────────────────────────────────────────────────────────
+const hC  = document.getElementById('h-canvas');
+const hCtx = hC.getContext('2d');
+const HW = hC.width, HH = hC.height;
+const hCx = HW/2, hCy = HH/2;
+const hRx = 108, hRy = 50;
+const hTilt = -28 * Math.PI / 180;
+let hT = 0;
+
+function drawH(t) {
+  hCtx.clearRect(0, 0, HW, HH);
+
+  drawEllipsePath(hCtx, hCx, hCy, hRx, hRy, hTilt);
+  hCtx.strokeStyle = 'rgba(90,105,130,0.45)';
+  hCtx.lineWidth = 1.3;
+  hCtx.stroke();
+
+  drawNucleus(hCtx, hCx, hCy, 14, 1);
+
+  const ep = ellipsePoint(hCx, hCy, hRx, hRy, hTilt, t);
+  drawElectron(hCtx, ep.x, ep.y, 9);
+
+  drawLabel(hCtx, 'Núcleo',   hCx + 50, hCy - 34, hCx, hCy);
+  drawLabel(hCtx, 'Electrón', hCx - 72, hCy + 72, ep.x, ep.y);
+}
+
+// ── HELIUM ───────────────────────────────────────────────────────────────────
+const heC  = document.getElementById('he-canvas');
+const heCtx = heC.getContext('2d');
+const EW = heC.width, EH = heC.height;
+const heCx = EW/2, heCy = EH/2;
+const heRx = 118, heRy = 56;
+const heTilt1 = -35 * Math.PI / 180;
+const heTilt2 =  35 * Math.PI / 180;
+let heT1 = 0, heT2 = Math.PI;
+
+function drawHe(t1, t2) {
+  heCtx.clearRect(0, 0, EW, EH);
+
+  drawEllipsePath(heCtx, heCx, heCy, heRx, heRy, heTilt1);
+  heCtx.strokeStyle = 'rgba(90,105,130,0.45)';
+  heCtx.lineWidth = 1.3;
+  heCtx.stroke();
+
+  drawEllipsePath(heCtx, heCx, heCy, heRx, heRy, heTilt2);
+  heCtx.strokeStyle = 'rgba(90,105,130,0.45)';
+  heCtx.lineWidth = 1.3;
+  heCtx.stroke();
+
+  drawNucleus(heCtx, heCx, heCy, 18, 2);
+
+  const ep1 = ellipsePoint(heCx, heCy, heRx, heRy, heTilt1, t1);
+  const ep2 = ellipsePoint(heCx, heCy, heRx, heRy, heTilt2, t2);
+  drawElectron(heCtx, ep1.x, ep1.y, 9);
+  drawElectron(heCtx, ep2.x, ep2.y, 9);
+
+  drawLabel(heCtx, 'Núcleo',   heCx + 56, heCy - 40, heCx, heCy);
+  drawLabel(heCtx, 'Electrón', heCx - 80, heCy + 80, ep1.x, ep1.y);
+  drawLabel(heCtx, 'Electrón', heCx + 88, heCy - 72, ep2.x, ep2.y);
+}
+
+// ── Loop ──────────────────────────────────────────────────────────────────────
+let last = null;
+
+function loop(ts) {
+  if (!last) last = ts;
+  const dt = (ts - last) / 1000;
+  last = ts;
+
+  hT   += 0.9  * dt;
+  heT1 += 1.05 * dt;
+  heT2 -= 0.85 * dt;
+
+  drawH(hT);
+  drawHe(heT1, heT2);
+  requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
