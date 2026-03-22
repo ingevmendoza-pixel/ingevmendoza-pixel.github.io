@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Animaciones - Química</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f4ee;
+            text-align: center;
+            padding: 40px;
+        }
+        h1 {
+            color: #334;
+            font-size: 28px;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            width: 250px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        a {
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        p {
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Animaciones de Química</h1>
+    <p>Selecciona una animación para verla</p>
+    
+    <div class="container">
+        <div class="card">
+            <a href="iones.html">⚛️ Iones: H⁺ y Cl⁻</a>
+            <p>Formación de iones en cloruro de hidrógeno (HCl)</p>
+        </div>
+        
+        <div class="card">
+            <a href="atomos.html">🔬 Átomos</a>
+            <p>Próximamente: estructura atómica</p>
+        </div>
+        
+        <div class="card">
+            <a href="enlaces.html">🔗 Enlaces Químicos</a>
+            <p>Próximamente: enlaces covalentes</p>
+        </div>
+    </div>
+</body>
+</html>
