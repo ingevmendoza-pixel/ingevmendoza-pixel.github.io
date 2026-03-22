@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Conductor vs Aislante — Flujo de Electrones</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
+
+  body {
+    background: #0d1117;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Rajdhani', sans-serif;
+    color: #dde6f0;
+    padding: 16px 24px;
+    gap: 12px;
+  }
+
+  header {
+    text-align: center;
+  }
+  header h1 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: #e8f0ff;
+  }
+  header p {
+    font-size: 0.76rem;
+    color: #445566;
+    letter-spacing: 0.15em;
+    margin-top: 2px;
+  }
+
+  .panels {
+    display: flex;
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    border-radius: 14px;
+    padding: 14px 16px 12px;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  .panel-cu { background: #150e06; border-color: #6a3a10; }
+  .panel-s  { background: #0e1108; border-color: #3a4a10; }
+
+  .panel-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .title-cu { color: #ff9050; }
+  .title-s  { color: #90c840; }
+
+  .badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 12px;
+    border-radius: 20px;
+  }
+  .badge-cu { background: rgba(255,100,30,0.15); color: #ff8050; border: 1px solid #c04020; }
+  .badge-s  { background: rgba(100,180,30,0.12); color: #90c840; border: 1px solid #507020; }
+
+  canvas { display: block; border-radius: 8px; }
+
+  .panel-desc {
+    font-size: 0.74rem;
+    color: #445566;
+    letter-spacing: 0.06em;
+    text-align: center;
+    max-width: 340px;
+    line-height: 1.5;
+  }
+  .panel-desc strong { color: #8898a8; }
+
+  /* battery indicator */
+  .battery-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    color: #445566;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .bat-neg { color: #4080ff; font-weight: 700; font-size: 0.9rem; }
+  .bat-pos { color: #ff4040; font-weight: 700; font-size: 0.9rem; }
+  .bat-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, #1a3a80, #800010);
+    border-radius: 2px;
+  }
+
+  .conclusion {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-size: 0.8rem;
+    color: #7a8898;
+    letter-spacing: 0.06em;
+    text-align: center;
+    max-width: 760px;
+  }
+  .conclusion strong { color: #a0b8c8; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Conductor vs. Aislante</h1>
+  <p>¿Qué pasa adentro del material cuando aplicás voltaje?</p>
+</header>
+
+<div class="panels">
+
+  <!-- COPPER PANEL -->
+  <div class="panel panel-cu">
+    <div class="panel-title title-cu">Cobre (Cu) — Conductor</div>
+    <span class="badge badge-cu">⚡ Electrones libres</span>
+    <div class="battery-row">
+      <span class="bat-neg">−</span>
+      <div class="bat-line"></div>
+      <span style="color:#888;font-size:0.65rem;">VOLTAJE APLICADO</span>
+      <div class="bat-line" style="background:linear-gradient(90deg,#800010,#1a3a80)"></div>
+      <span class="bat-pos">+</span>
+    </div>
+    <canvas id="cu-canvas" width="340" height="260"></canvas>
+    <div class="panel-desc">
+      Los electrones de valencia <strong>se mueven libremente</strong> entre átomos.<br>
+      El voltaje los empuja en una dirección → <strong>hay corriente</strong>.
+    </div>
+  </div>
+
+  <!-- SULFUR PANEL -->
+  <div class="panel panel-s">
+    <div class="panel-title title-s">Azufre (S) — Aislante</div>
+    <span class="badge badge-s">✗ Sin electrones libres</span>
+    <div class="battery-row">
+      <span class="bat-neg">−</span>
+      <div class="bat-line"></div>
+      <span style="color:#888;font-size:0.65rem;">VOLTAJE APLICADO</span>
+      <div class="bat-line" style="background:linear-gradient(90deg,#800010,#1a3a80)"></div>
+      <span class="bat-pos">+</span>
+    </div>
+    <canvas id="su-canvas" width="340" height="260"></canvas>
+    <div class="panel-desc">
+      Los electrones <strong>quedan atrapados</strong> en cada átomo.<br>
+      El voltaje no los puede mover → <strong>no hay corriente</strong>.
+    </div>
+  </div>
+
+</div>
+
+<div class="conclusion">
+  La diferencia no es magia — es geometría atómica: <strong>1 electrón afuera</strong> (Cu) se mueve fácil · <strong>6 electrones afuera</strong> (S) se quedan fijos
+</div>
+
+<script>
+// ── COPPER: free electrons drifting right (current direction) ─────────────
+(function() {
+  const cv  = document.getElementById('cu-canvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+
+  // Grid of copper atoms
+  const COLS = 6, ROWS = 4;
+  const padX = 40, padY = 36;
+  const stepX = (W - padX*2) / (COLS-1);
+  const stepY = (H - padY*2) / (ROWS-1);
+
+  const atoms = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      atoms.push({ x: padX + c*stepX, y: padY + r*stepY });
+    }
+  }
+
+  // Free electrons — drift to the right (conventional current left)
+  const electrons = [];
+  for (let i = 0; i < 18; i++) {
+    electrons.push({
+      x: Math.random() * W,
+      y: padY + Math.random() * (H - padY*2),
+      vx: 28 + Math.random() * 18,   // drift rightward
+      vy: (Math.random() - 0.5) * 22,
+      phase: Math.random() * Math.PI * 2,
+      wobble: 8 + Math.random() * 10,
+    });
+  }
+
+  // Glow pulse for atoms
+  let t = 0;
+
+  function draw(ts) {
+    t = ts / 1000;
+    ctx.clearRect(0, 0, W, H);
+
+    // Background grid lines (faint)
+    ctx.strokeStyle = 'rgba(255,140,60,0.06)';
+    ctx.lineWidth = 1;
+    for (let r = 0; r < ROWS; r++) {
+      ctx.beginPath();
+      ctx.moveTo(padX, padY + r*stepY);
+      ctx.lineTo(W - padX, padY + r*stepY);
+      ctx.stroke();
+    }
+    for (let c = 0; c < COLS; c++) {
+      ctx.beginPath();
+      ctx.moveTo(padX + c*stepX, padY);
+      ctx.lineTo(padX + c*stepX, H - padY);
+      ctx.stroke();
+    }
+
+    // Draw atoms
+    atoms.forEach(a => {
+      const pulse = 0.5 + 0.5 * Math.sin(t * 1.8 + a.x * 0.05);
+      ctx.save();
+      ctx.shadowColor = `rgba(255,130,40,${0.3 + pulse*0.3})`;
+      ctx.shadowBlur = 10 + pulse*6;
+      const g = ctx.createRadialGradient(a.x-3, a.y-3, 1, a.x, a.y, 11);
+      g.addColorStop(0, '#ffe0c0');
+      g.addColorStop(0.5, '#c06020');
+      g.addColorStop(1, '#8a3800');
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, 11, 0, Math.PI*2);
+      ctx.fillStyle = g;
+      ctx.fill();
+      ctx.strokeStyle = '#ff7030';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.restore();
+
+      // nucleus label
+      ctx.fillStyle = '#ffcc88';
+      ctx.font = 'bold 7px "Rajdhani",sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Cu', a.x, a.y);
+    });
+
+    // Update & draw free electrons
+    const dt = 0.016;
+    electrons.forEach(e => {
+      e.x += e.vx * dt;
+      e.y += e.vy * dt + Math.sin(t*3 + e.phase) * e.wobble * dt;
+
+      // wrap around
+      if (e.x > W + 10) e.x = -10;
+      if (e.y < padY - 10) e.y = padY - 10, e.vy *= -1;
+      if (e.y > H - padY + 10) e.y = H - padY + 10, e.vy *= -1;
+
+      ctx.save();
+      ctx.shadowColor = 'rgba(60,160,255,0.9)';
+      ctx.shadowBlur = 12;
+      const g = ctx.createRadialGradient(e.x-1.5, e.y-1.5, 0.3, e.x, e.y, 5);
+      g.addColorStop(0, '#ffffff');
+      g.addColorStop(1, '#2080ff');
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, 5, 0, Math.PI*2);
+      ctx.fillStyle = g;
+      ctx.fill();
+      ctx.restore();
+
+      // trail
+      ctx.save();
+      ctx.strokeStyle = 'rgba(40,120,255,0.2)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(e.x, e.y);
+      ctx.lineTo(e.x - e.vx*0.18, e.y);
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    // Current arrow on right side
+    const arrowX = W - 14;
+    const arrowY = H / 2;
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,80,40,0.7)';
+    ctx.font = 'bold 11px "Rajdhani",sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('I →', arrowX - 4, arrowY);
+    ctx.restore();
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+// ── SULFUR: electrons trapped, vibrating in place ─────────────────────────
+(function() {
+  const cv  = document.getElementById('su-canvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+
+  const COLS = 6, ROWS = 4;
+  const padX = 40, padY = 36;
+  const stepX = (W - padX*2) / (COLS-1);
+  const stepY = (H - padY*2) / (ROWS-1);
+
+  // Each atom has its own bound electrons that vibrate but don't escape
+  const atoms = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      // 2 bound electrons per atom, orbiting tightly
+      const bound = [];
+      for (let i = 0; i < 2; i++) {
+        bound.push({
+          angle: (i / 2) * Math.PI * 2 + Math.random() * 0.5,
+          speed: 1.8 + Math.random() * 0.6,
+          radius: 17 + Math.random() * 3,
+          phase: Math.random() * Math.PI * 2,
+        });
+      }
+      atoms.push({ x: padX + c*stepX, y: padY + r*stepY, bound });
+    }
+  }
+
+  let t = 0;
+
+  function draw(ts) {
+    t = ts / 1000;
+    ctx.clearRect(0, 0, W, H);
+
+    // Background grid lines
+    ctx.strokeStyle = 'rgba(100,160,40,0.06)';
+    ctx.lineWidth = 1;
+    for (let r = 0; r < ROWS; r++) {
+      ctx.beginPath();
+      ctx.moveTo(padX, padY + r*stepY);
+      ctx.lineTo(W - padX, padY + r*stepY);
+      ctx.stroke();
+    }
+    for (let c = 0; c < COLS; c++) {
+      ctx.beginPath();
+      ctx.moveTo(padX + c*stepX, padY);
+      ctx.lineTo(padX + c*stepX, H - padY);
+      ctx.stroke();
+    }
+
+    atoms.forEach(a => {
+      // Orbit ring
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, 17, 0, Math.PI*2);
+      ctx.strokeStyle = 'rgba(120,180,40,0.12)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Draw nucleus
+      ctx.save();
+      ctx.shadowColor = 'rgba(120,180,30,0.4)';
+      ctx.shadowBlur = 8;
+      const g = ctx.createRadialGradient(a.x-3, a.y-3, 1, a.x, a.y, 10);
+      g.addColorStop(0, '#e8f8c0');
+      g.addColorStop(0.5, '#608020');
+      g.addColorStop(1, '#304010');
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, 10, 0, Math.PI*2);
+      ctx.fillStyle = g;
+      ctx.fill();
+      ctx.strokeStyle = '#80b030';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = '#b8e870';
+      ctx.font = 'bold 7px "Rajdhani",sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('S', a.x, a.y);
+
+      // Draw bound electrons — they orbit but stay close
+      a.bound.forEach(e => {
+        e.angle += e.speed * 0.016;
+        const ex = a.x + e.radius * Math.cos(e.angle);
+        const ey = a.y + e.radius * Math.sin(e.angle);
+
+        ctx.save();
+        ctx.shadowColor = 'rgba(160,220,40,0.7)';
+        ctx.shadowBlur = 8;
+        const eg = ctx.createRadialGradient(ex-1, ey-1, 0.3, ex, ey, 4.5);
+        eg.addColorStop(0, '#ffffff');
+        eg.addColorStop(1, '#80c020');
+        ctx.beginPath();
+        ctx.arc(ex, ey, 4.5, 0, Math.PI*2);
+        ctx.fillStyle = eg;
+        ctx.fill();
+        ctx.restore();
+      });
+    });
+
+    // No current — show blocked symbol on right
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,60,40,0.6)';
+    ctx.font = 'bold 11px "Rajdhani",sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('I = 0', W - 16, H/2);
+    ctx.restore();
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>
