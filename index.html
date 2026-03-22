@@ -2,105 +2,259 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mis Animaciones de Ingenieria</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ing. Mendoza - Material Didáctico</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            background: #f7f4ee;
-            text-align: center;
-            padding: 40px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
         }
-        h1 {
-            color: #334;
-            font-size: 32px;
-        }
-        .sub {
-            color: #666;
-            margin-bottom: 40px;
-        }
+        
         .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 25px;
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
         }
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            width: 280px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
         }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .card h3 {
-            font-size: 22px;
-            margin-bottom: 10px;
-        }
-        a {
-            text-decoration: none;
-            color: #0066cc;
-        }
-        p {
-            color: #666;
-            margin-top: 10px;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        .icon {
+        
+        .header h1 {
             font-size: 48px;
             margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
+        
+        .header p {
+            font-size: 20px;
+            opacity: 0.95;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .section h2 {
+            color: #4a5568;
+            font-size: 28px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: inline-block;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .card {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+        
+        .card h3 {
+            color: #2d3748;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        
+        .card p {
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .card a {
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .card a:hover {
+            color: #764ba2;
+        }
+        
+        .icon {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+        
+        .tag {
+            display: inline-block;
+            background: #e2e8f0;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #4a5568;
+            margin-top: 10px;
+            margin-right: 5px;
+        }
+        
         footer {
-            margin-top: 50px;
-            color: #888;
-            font-size: 12px;
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 32px; }
+            .grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <h1>🧪 Animaciones de Ingenieria</h1>
-    <p class="sub">Selecciona una animación para verla</p>
-    
-    <div class="container" id="lista-animaciones">
-        <p>Cargando animaciones...</p>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Ing. Evelyn Mendoza</h1>
+            <p>Material Didáctico Interactivo</p>
+            <div class="badge">⚡ Ingeniería Eléctrica | 🧪 Química | 📖 Educación</div>
+        </div>
+        
+        <!-- Sección: Química -->
+        <div class="section">
+            <h2>🧪 Química</h2>
+            <div class="grid" id="quimica-grid"></div>
+        </div>
+        
+        <!-- Sección: Electricidad -->
+        <div class="section">
+            <h2>⚡ Electricidad</h2>
+            <div class="grid" id="electricidad-grid"></div>
+        </div>
+        
+        <!-- Sección: Recursos Descargables -->
+        <div class="section">
+            <h2>📥 Recursos Descargables</h2>
+            <div class="grid" id="recursos-grid">
+                <div class="card">
+                    <div class="icon">📄</div>
+                    <h3>Guías de Estudio</h3>
+                    <p>Próximamente: guías en PDF, ejercicios resueltos y material complementario.</p>
+                    <span class="tag">Próximamente</span>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Material educativo interactivo | Ingeniera Evelyn Mendoza</p>
+            <p style="font-size: 12px;">Las animaciones son interactivas - Actualizado constantemente</p>
+        </footer>
     </div>
     
-    <footer>
-        Animaciones creadas para aprendizaje de química | Actualizado automáticamente
-    </footer>
-
     <script>
-        // 📌 LISTA DE ANIMACIONES
-        // Cuando subas una nueva animación, SOLO agrega una línea aquí
+        // 📌 LISTA DE ANIMACIONES - Agrega aquí cada nuevo material
         const animaciones = [
-            { nombre: "Iones: H⁺ y Cl⁻", archivo: "iones.html", descripcion: "Formación de iones en cloruro de hidrógeno (HCl). Átomos neutros, enlace covalente y separación en agua.", icono: "⚛️" },
-            { nombre: "Modelo Atómico", archivo: "modelo_atomico.html", descripcion: "Estructura del átomo: núcleo y electrones en órbitas. Visualización interactiva.", icono: "🔬" },
-           
+            { 
+                nombre: "⚛️ Formación de Iones", 
+                archivo: "iones.html", 
+                descripcion: "Visualización del proceso de ionización en el cloruro de hidrógeno (HCl). Átomos neutros, enlace covalente y separación en iones H⁺ y Cl⁻.",
+                materia: "quimica",
+                tags: ["iones", "enlace químico", "HCl"]
+            },
+            { 
+                nombre: "🔬 Modelo Atómico", 
+                archivo: "modelo_atomico.html", 
+                descripcion: "Estructura del átomo: núcleo con protones y neutrones, electrones en órbitas. Visualización interactiva.",
+                materia: "quimica",
+                tags: ["átomo", "estructura atómica", "electrones"]
+            },
+            { 
+                nombre: "🔌 Conductores vs Aislantes", 
+                archivo: "comparacion_atomos.html", 
+                descripcion: "Comparación atómica entre Cobre (conductor), Aluminio (conductor) y Azufre (aislante). La capa de valencia determina el comportamiento eléctrico.",
+                materia: "electricidad",
+                tags: ["conductores", "aislantes", "cobre", "aluminio", "azufre", "valencia"]
+            }
         ];
-
-        // Generar las tarjetas automáticamente
-        const contenedor = document.getElementById("lista-animaciones");
-        contenedor.innerHTML = "";
         
-        for (let i = 0; i < animaciones.length; i++) {
-            const anim = animaciones[i];
-            contenedor.innerHTML += `
-                <div class="card">
-                    <div class="icon">${anim.icono}</div>
-                    <h3><a href="${anim.archivo}">${anim.nombre}</a></h3>
-                    <p>${anim.descripcion}</p>
-                </div>
-            `;
+        // Cargar animaciones en la sección de Química
+        const quimicaGrid = document.getElementById("quimica-grid");
+        const electricidadGrid = document.getElementById("electricidad-grid");
+        
+        quimicaGrid.innerHTML = "";
+        electricidadGrid.innerHTML = "";
+        
+        const quimicas = animaciones.filter(a => a.materia === "quimica");
+        const electricas = animaciones.filter(a => a.materia === "electricidad");
+        
+        // Agregar animaciones de Química
+        if (quimicas.length > 0) {
+            quimicas.forEach(anim => {
+                quimicaGrid.innerHTML += `
+                    <div class="card">
+                        <div class="icon">${anim.nombre.charAt(0)}</div>
+                        <h3>${anim.nombre}</h3>
+                        <p>${anim.descripcion}</p>
+                        <a href="${anim.archivo}">🔗 Ver animación →</a>
+                        <div>
+                            ${anim.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            quimicaGrid.innerHTML = '<div class="card"><p>Próximamente más animaciones de química...</p></div>';
         }
         
-        // Si no hay animaciones, mostrar mensaje
-        if (animaciones.length === 0) {
-            contenedor.innerHTML = "<p>Próximamente más animaciones...</p>";
+        // Agregar animaciones de Electricidad
+        if (electricas.length > 0) {
+            electricas.forEach(anim => {
+                electricidadGrid.innerHTML += `
+                    <div class="card">
+                        <div class="icon">${anim.nombre.charAt(0)}</div>
+                        <h3>${anim.nombre}</h3>
+                        <p>${anim.descripcion}</p>
+                        <a href="${anim.archivo}">🔗 Ver animación →</a>
+                        <div>
+                            ${anim.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            electricidadGrid.innerHTML = '<div class="card"><p>Próximamente animaciones de electricidad...</p></div>';
         }
     </script>
 </body>
