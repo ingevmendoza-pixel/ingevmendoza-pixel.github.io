@@ -1,0 +1,463 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Cargas Eléctricas — Figuras 2-5 y 2-6</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
+
+  body {
+    background: #0d1117;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Rajdhani', sans-serif;
+    color: #dde6f0;
+    padding: 14px 28px 12px;
+    gap: 12px;
+  }
+
+  header {
+    text-align: center;
+  }
+  header h1 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: #e8f0ff;
+  }
+  header p {
+    font-size: 0.76rem;
+    color: #445566;
+    letter-spacing: 0.12em;
+    margin-top: 2px;
+  }
+
+  /* ── SECTION LABELS ── */
+  .section-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 900px;
+  }
+  .section-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 3px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .tag-25 { background: rgba(80,140,255,0.12); color: #70a8ff; border: 1px solid #2a4888; }
+  .tag-26 { background: rgba(255,160,40,0.12); color: #ffa830; border: 1px solid #885010; }
+  .divider { flex:1; height:1px; background: rgba(255,255,255,0.05); }
+  .section-desc { font-size: 0.74rem; color: #445566; letter-spacing: 0.05em; white-space: nowrap; }
+
+  /* ── FIG 2-5: four cases row ── */
+  .fig25-row {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .case-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 10px 8px 8px;
+  }
+
+  .case-label {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #556677;
+    line-height: 1.4;
+  }
+
+  /* ── FIG 2-6 ── */
+  .fig26-wrap {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 900px;
+    justify-content: center;
+  }
+
+  .fig26-desc {
+    font-size: 0.78rem;
+    color: #556677;
+    max-width: 200px;
+    line-height: 1.6;
+    letter-spacing: 0.04em;
+  }
+  .fig26-desc strong { color: #8898a8; }
+
+  canvas { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Cargas Eléctricas</h1>
+  <p>Atracción, repulsión y campo eléctrico · Figuras 2-5 y 2-6</p>
+</header>
+
+<!-- ══ FIGURA 2-5 ════════════════════════════════════════════════════════ -->
+<div class="section-bar">
+  <span class="section-tag tag-25">Figura 2-5 — Atracción y Repulsión</span>
+  <div class="divider"></div>
+</div>
+
+<div class="fig25-row">
+
+  <div class="case-card">
+    <canvas id="c-neutral" width="160" height="90"></canvas>
+    <div class="case-label">(a) Descargadas<br>sin fuerza</div>
+  </div>
+
+  <div class="case-card">
+    <canvas id="c-attract" width="160" height="90"></canvas>
+    <div class="case-label">(b) Cargas opuestas<br>se atraen</div>
+  </div>
+
+  <div class="case-card">
+    <canvas id="c-repel-pos" width="160" height="90"></canvas>
+    <div class="case-label">(c) Positivas iguales<br>se repelen</div>
+  </div>
+
+  <div class="case-card">
+    <canvas id="c-repel-neg" width="160" height="90"></canvas>
+    <div class="case-label">(d) Negativas iguales<br>se repelen</div>
+  </div>
+
+</div>
+
+<!-- ══ FIGURA 2-6 ════════════════════════════════════════════════════════ -->
+<div class="section-bar">
+  <span class="section-tag tag-26">Figura 2-6 — Campo Eléctrico</span>
+  <div class="divider"></div>
+</div>
+
+<div class="fig26-wrap">
+  <div class="fig26-desc">
+    Entre dos superficies de <strong>carga opuesta</strong> se forma un campo eléctrico.<br><br>
+    Las líneas de fuerza van del <strong style="color:#ff6040">+ positivo</strong> al <strong style="color:#4090ff">− negativo</strong> en forma paralela y uniforme.
+  </div>
+  <canvas id="c-field" width="520" height="200"></canvas>
+  <div class="fig26-desc">
+    Un electrón libre dentro del campo <strong>siempre se moverá</strong> hacia la placa positiva — así nace la <strong>corriente eléctrica</strong>.
+  </div>
+</div>
+
+<script>
+// ── Helpers ───────────────────────────────────────────────────────────────
+function drawCharge(ctx, x, y, r, type) {
+  // type: 'pos', 'neg', 'neu'
+  ctx.save();
+  let col1, col2, stroke, glow;
+  if (type === 'pos') {
+    col1='#ffe0d0'; col2='#e04010'; stroke='#c02000'; glow='rgba(220,60,20,0.7)';
+  } else if (type === 'neg') {
+    col1='#d0e8ff'; col2='#1060e0'; stroke='#0040c0'; glow='rgba(20,80,220,0.7)';
+  } else {
+    col1='#d0d8e0'; col2='#506070'; stroke='#304050'; glow='rgba(80,100,120,0.3)';
+  }
+  ctx.shadowColor = glow; ctx.shadowBlur = 12;
+  const g = ctx.createRadialGradient(x-r*.35, y-r*.35, 1, x, y, r);
+  g.addColorStop(0, col1); g.addColorStop(1, col2);
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
+  ctx.fillStyle = g; ctx.fill();
+  ctx.strokeStyle = stroke; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.restore();
+
+  // label
+  ctx.save();
+  ctx.fillStyle = '#fff';
+  ctx.font = `bold ${r*0.85}px "Rajdhani",sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  if (type === 'pos') ctx.fillText('+', x, y+1);
+  else if (type === 'neg') ctx.fillText('−', x, y+1);
+  ctx.restore();
+}
+
+// ── (a) NEUTRAL — no force, steady ───────────────────────────────────────
+(function() {
+  const cv = document.getElementById('c-neutral');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    drawCharge(ctx, W*0.30, H/2, 22, 'neu');
+    drawCharge(ctx, W*0.70, H/2, 22, 'neu');
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+// ── (b) ATTRACT — opposite charges pull toward each other ─────────────────
+(function() {
+  const cv = document.getElementById('c-attract');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  let t = 0;
+  function draw(ts) {
+    t = ts / 1000;
+    ctx.clearRect(0,0,W,H);
+    // oscillate distance — attract animation
+    const offset = 6 * Math.abs(Math.sin(t * 1.4));
+    const lx = W*0.30 + offset;
+    const rx = W*0.70 - offset;
+
+    // attraction arc between them
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(lx + 22, H/2);
+    ctx.lineTo(rx - 22, H/2);
+    ctx.strokeStyle = `rgba(180,100,180,${0.15 + 0.1*Math.sin(t*2)})`;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4,4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // arrows pointing inward
+    const mid = (lx + rx) / 2;
+    drawArrow(ctx, mid - 14, H/2, lx + 24, H/2, 'rgba(220,80,40,0.6)');
+    drawArrow(ctx, mid + 14, H/2, rx - 24, H/2, 'rgba(40,90,220,0.6)');
+
+    drawCharge(ctx, lx, H/2, 22, 'pos');
+    drawCharge(ctx, rx, H/2, 22, 'neg');
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+// ── (c) REPEL positive ────────────────────────────────────────────────────
+(function() {
+  const cv = document.getElementById('c-repel-pos');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  let t = 0;
+  function draw(ts) {
+    t = ts / 1000;
+    ctx.clearRect(0,0,W,H);
+    const offset = 6 * Math.abs(Math.sin(t * 1.4));
+    const lx = W*0.30 - offset;
+    const rx = W*0.70 + offset;
+
+    drawArrow(ctx, W*0.30 + 8, H/2, lx - 10, H/2, 'rgba(220,60,20,0.6)');
+    drawArrow(ctx, W*0.70 - 8, H/2, rx + 10, H/2, 'rgba(220,60,20,0.6)');
+
+    drawCharge(ctx, lx, H/2, 22, 'pos');
+    drawCharge(ctx, rx, H/2, 22, 'pos');
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+// ── (d) REPEL negative ────────────────────────────────────────────────────
+(function() {
+  const cv = document.getElementById('c-repel-neg');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  let t = 0;
+  function draw(ts) {
+    t = ts / 1000;
+    ctx.clearRect(0,0,W,H);
+    const offset = 6 * Math.abs(Math.sin(t * 1.4));
+    const lx = W*0.30 - offset;
+    const rx = W*0.70 + offset;
+
+    drawArrow(ctx, W*0.30 + 8, H/2, lx - 10, H/2, 'rgba(30,80,220,0.6)');
+    drawArrow(ctx, W*0.70 - 8, H/2, rx + 10, H/2, 'rgba(30,80,220,0.6)');
+
+    drawCharge(ctx, lx, H/2, 22, 'neg');
+    drawCharge(ctx, rx, H/2, 22, 'neg');
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+// ── Arrow helper ──────────────────────────────────────────────────────────
+function drawArrow(ctx, x1, y1, x2, y2, color) {
+  ctx.save();
+  ctx.strokeStyle = color; ctx.fillStyle = color;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  // arrowhead
+  const ang = Math.atan2(y2-y1, x2-x1);
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - 8*Math.cos(ang-0.4), y2 - 8*Math.sin(ang-0.4));
+  ctx.lineTo(x2 - 8*Math.cos(ang+0.4), y2 - 8*Math.sin(ang+0.4));
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+// ── FIGURA 2-6: Electric field with drifting field lines ──────────────────
+(function() {
+  const cv = document.getElementById('c-field');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+
+  const plateW = 48;
+  const fieldL = plateW + 10;
+  const fieldR = W - plateW - 10;
+  const ROWS = 5;
+  const rowYs = [];
+  for (let i = 0; i < ROWS; i++) rowYs.push(22 + i * ((H-44)/(ROWS-1)));
+
+  // Animated field line particles
+  const particles = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let p = 0; p < 4; p++) {
+      particles.push({
+        x: fieldL + ((fieldR - fieldL) / 4) * p + Math.random()*10,
+        y: rowYs[r],
+        speed: 38 + Math.random()*14,
+        row: r,
+      });
+    }
+  }
+
+  // One free electron drifting left→right inside field
+  const freeE = { x: fieldL + 30, y: H/2, speed: 22 };
+
+  let last = null;
+  function draw(ts) {
+    if (!last) last = ts;
+    const dt = Math.min((ts-last)/1000, 0.05); last = ts;
+    ctx.clearRect(0,0,W,H);
+
+    // ── Positive plate (left) ──
+    ctx.save();
+    ctx.fillStyle = '#1a0808';
+    ctx.strokeStyle = '#c03010';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(2, 8, plateW, H-16, 6);
+    ctx.fill(); ctx.stroke();
+    for (let i = 0; i < ROWS; i++) {
+      ctx.fillStyle = '#ff5030';
+      ctx.font = 'bold 14px "Rajdhani",sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('+', plateW/2 + 2, rowYs[i]);
+    }
+    ctx.restore();
+
+    // ── Negative plate (right) ──
+    ctx.save();
+    ctx.fillStyle = '#08101a';
+    ctx.strokeStyle = '#1050c0';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(W - plateW - 2, 8, plateW, H-16, 6);
+    ctx.fill(); ctx.stroke();
+    for (let i = 0; i < ROWS; i++) {
+      ctx.fillStyle = '#4090ff';
+      ctx.font = 'bold 16px "Rajdhani",sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('−', W - plateW/2 - 2, rowYs[i]);
+    }
+    ctx.restore();
+
+    // ── Static field lines ──
+    rowYs.forEach(ry => {
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(fieldL, ry);
+      ctx.lineTo(fieldR, ry);
+      ctx.strokeStyle = 'rgba(180,100,220,0.12)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    // ── Moving field line particles ──
+    particles.forEach(p => {
+      p.x += p.speed * dt;
+      if (p.x > fieldR + 8) p.x = fieldL - 4;
+
+      const alpha = 0.5 + 0.4 * ((p.x - fieldL) / (fieldR - fieldL));
+      ctx.save();
+      ctx.shadowColor = 'rgba(180,80,255,0.6)';
+      ctx.shadowBlur = 6;
+      ctx.fillStyle = `rgba(180,100,255,${alpha})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2.5, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    });
+
+    // ── Arrow labels "Líneas de fuerza" ──
+    ctx.save();
+    ctx.font = 'bold 10px "Rajdhani",sans-serif';
+    ctx.fillStyle = '#446';
+    ctx.textAlign = 'center';
+    ctx.letterSpacing = '0.1em';
+    // top arrow
+    drawArrow(ctx, fieldL + 30, 10, fieldL + 90, 10, 'rgba(160,80,220,0.35)');
+    ctx.fillStyle = '#556677';
+    ctx.fillText('LÍNEAS DE FUERZA', fieldL + 130, 10);
+    ctx.restore();
+
+    // ── Free electron drifting + → ──────────────────────────────
+    freeE.x += freeE.speed * dt;
+    if (freeE.x > fieldR - 8) freeE.x = fieldL + 10;
+
+    ctx.save();
+    ctx.shadowColor = 'rgba(40,180,255,1)';
+    ctx.shadowBlur = 18;
+    const eg = ctx.createRadialGradient(freeE.x-2, freeE.y-2, 0.5, freeE.x, freeE.y, 9);
+    eg.addColorStop(0, '#ffffff');
+    eg.addColorStop(0.4, '#80d0ff');
+    eg.addColorStop(1, '#0060e0');
+    ctx.beginPath(); ctx.arc(freeE.x, freeE.y, 9, 0, Math.PI*2);
+    ctx.fillStyle = eg; ctx.fill();
+    ctx.strokeStyle = '#0040c0'; ctx.lineWidth = 1.2; ctx.stroke();
+    // e- label
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 9px "Rajdhani",sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('e⁻', freeE.x, freeE.y);
+    ctx.restore();
+
+    // trail behind electron
+    ctx.save();
+    ctx.strokeStyle = 'rgba(40,140,255,0.18)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(freeE.x - 24, freeE.y);
+    ctx.lineTo(freeE.x - 11, freeE.y);
+    ctx.stroke();
+    ctx.restore();
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>
