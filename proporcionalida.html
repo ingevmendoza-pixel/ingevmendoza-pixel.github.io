@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ley de Ohm — Proporcionalidad</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Crimson+Pro:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400;700&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: #f6f3ee;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 40px;
+    font-family: 'Rajdhani', sans-serif;
+    color: #1a1a2a;
+    gap: 22px;
+  }
+
+  header { text-align: center; }
+  header h1 {
+    font-size: clamp(1rem, 3vw, 1.2rem);
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #334;
+  }
+  header p {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: #778;
+    margin-top: 3px;
+  }
+
+  /* ── Mode tabs ── */
+  .tabs {
+    display: flex;
+    background: #eae6df;
+    border-radius: 10px;
+    padding: 4px;
+    gap: 4px;
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 9px 12px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(0.72rem, 2.5vw, 0.82rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #778;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .tab.active {
+    background: #fff;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+  }
+
+  .tab-v.active  { color: #c0392b; }
+  .tab-i.active  { color: #2471a3; }
+  .tab-r.active  { color: #1e8449; }
+
+  /* ── Card ── */
+  .card {
+    background: #fff;
+    border: 1px solid #e0ddd6;
+    border-radius: 14px;
+    box-shadow: 0 3px 18px rgba(0,0,0,0.07);
+    width: 100%;
+    max-width: 680px;
+    padding: 24px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  /* ── Rule banner ── */
+  .rule {
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: clamp(0.82rem, 2.5vw, 0.95rem);
+    line-height: 1.55;
+    text-align: center;
+    font-family: 'Crimson Pro', serif;
+  }
+
+  .rule strong {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .rule-direct   { background: #fef3f0; border: 1px solid #f0c0b0; color: #7a2a10; }
+  .rule-direct strong { color: #c03010; }
+  .rule-inverse  { background: #f0f4fe; border: 1px solid #b0c8f0; color: #102870; }
+  .rule-inverse strong { color: #1040c0; }
+
+  /* ── Slider ── */
+  .slider-section { display: flex; flex-direction: column; gap: 8px; }
+
+  .slider-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .slider-var {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    min-width: 18px;
+  }
+
+  .slider-desc {
+    font-size: 0.78rem;
+    color: #778;
+    flex: 1;
+    letter-spacing: 0.05em;
+  }
+
+  .slider-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    min-width: 52px;
+    text-align: right;
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    background: #ddd;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: transform 0.1s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+  /* ── Graph area ── */
+  .graph-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  canvas.graph {
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    background: #fafaf8;
+    border: 1px solid #e8e4dc;
+  }
+
+  .graph-caption {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 0.8rem;
+    color: #889;
+    text-align: center;
+  }
+
+  /* ── Fixed value display ── */
+  .fixed-display {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .fixed-box {
+    background: #f5f3ef;
+    border: 1px solid #e0dcd4;
+    border-radius: 8px;
+    padding: 8px 16px;
+    text-align: center;
+    min-width: 100px;
+  }
+
+  .fixed-box .fb-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #889;
+  }
+
+  .fixed-box .fb-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+
+  .col-v { color: #c0392b; }
+  .col-i { color: #2471a3; }
+  .col-r { color: #1e8449; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ley de Ohm — V = I · R</h1>
+  <p>Explorá la proporcionalidad directa e inversa entre las variables</p>
+</header>
+
+<!-- Mode selector -->
+<div class="tabs">
+  <button class="tab tab-v active" onclick="setMode('v')">V varía &nbsp;(I·R fijos)</button>
+  <button class="tab tab-i" onclick="setMode('i')">I varía &nbsp;(V·R fijos)</button>
+  <button class="tab tab-r" onclick="setMode('r')">R varía &nbsp;(V·I fijos)</button>
+</div>
+
+<div class="card">
+
+  <!-- Rule explanation -->
+  <div class="rule rule-direct" id="rule-box">
+    <strong id="rule-title">Proporcionalidad Directa</strong>
+    <span id="rule-text">Si <em>R</em> es constante, <em>V</em> y <em>I</em> son directamente proporcionales: al duplicar la corriente, la tensión también se duplica.</span>
+  </div>
+
+  <!-- Slider -->
+  <div class="slider-section">
+    <div class="slider-header">
+      <span class="slider-var" id="sl-var">I</span>
+      <span class="slider-desc" id="sl-desc">Corriente (Amperes)</span>
+      <span class="slider-val" id="sl-val-display">5.0 A</span>
+    </div>
+    <input type="range" id="main-slider" min="0.5" max="10" step="0.1" value="5">
+  </div>
+
+  <!-- Fixed values + result -->
+  <div class="fixed-display" id="fixed-display">
+    <!-- populated by JS -->
+  </div>
+
+  <!-- Graph -->
+  <div class="graph-wrap">
+    <canvas class="graph" id="graph" width="560" height="260"></canvas>
+    <div class="graph-caption" id="graph-caption"></div>
+  </div>
+
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let mode = 'v';   // 'v' | 'i' | 'r'
+let fixedR = 3.0;
+let fixedV = 15.0;
+let fixedI = 5.0;
+let sliderVal = 5.0;
+
+const MAX = 10, MIN = 0.5;
+
+// ── Colors ─────────────────────────────────────────────────────────────────
+const CV = '#c0392b', CI = '#2471a3', CR = '#1e8449';
+
+// ── Mode config ────────────────────────────────────────────────────────────
+const configs = {
+  v: {
+    slVar: 'I', slDesc: 'Corriente (Amperes)', slUnit: 'A',
+    slMin: 0.5, slMax: 10, slDefault: 5,
+    ruleClass: 'rule-direct',
+    ruleTitle: 'Proporcionalidad Directa — V ∝ I',
+    ruleText: 'Con R constante, V y I son directamente proporcionales. Si duplicás la corriente, la tensión se duplica.',
+    xLabel: 'Corriente I (A)', yLabel: 'Tensión V (V)',
+    xColor: CI, yColor: CV,
+    caption: 'La línea recta confirma proporcionalidad directa: V = I · R  (R fija)',
+  },
+  i: {
+    slVar: 'V', slDesc: 'Tensión (Volts)', slUnit: 'V',
+    slMin: 0.5, slMax: 20, slDefault: 15,
+    ruleClass: 'rule-direct',
+    ruleTitle: 'Proporcionalidad Directa — I ∝ V',
+    ruleText: 'Con R constante, I y V son directamente proporcionales. Si duplicás la tensión, la corriente se duplica.',
+    xLabel: 'Tensión V (V)', yLabel: 'Corriente I (A)',
+    xColor: CV, yColor: CI,
+    caption: 'La línea recta confirma proporcionalidad directa: I = V / R  (R fija)',
+  },
+  r: {
+    slVar: 'R', slDesc: 'Resistencia (Ohms)', slUnit: 'Ω',
+    slMin: 0.5, slMax: 10, slDefault: 3,
+    ruleClass: 'rule-inverse',
+    ruleTitle: 'Proporcionalidad Inversa — I ∝ 1/R',
+    ruleText: 'Con V constante, I y R son inversamente proporcionales. Si duplicás la resistencia, la corriente se reduce a la mitad.',
+    xLabel: 'Resistencia R (Ω)', yLabel: 'Corriente I (A)',
+    xColor: CR, yColor: CI,
+    caption: 'La curva hiperbólica confirma proporcionalidad inversa: I = V / R  (V fija)',
+  },
+};
+
+// ── Derived values ─────────────────────────────────────────────────────────
+function compute(m, sv) {
+  if (m === 'v') return { V: sv * fixedR, I: sv,     R: fixedR };
+  if (m === 'i') return { V: sv,          I: sv / fixedR, R: fixedR };
+  if (m === 'r') return { V: fixedV,      I: fixedV / sv, R: sv };
+}
+
+// ── Set mode ───────────────────────────────────────────────────────────────
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab-${m}`).classList.add('active');
+
+  const cfg = configs[m];
+  const sl = document.getElementById('main-slider');
+  sl.min = cfg.slMin; sl.max = cfg.slMax; sl.step = 0.1;
+  sl.value = cfg.slDefault;
+  sliderVal = cfg.slDefault;
+
+  document.getElementById('sl-var').textContent = cfg.slVar;
+  document.getElementById('sl-var').style.color = m === 'v' ? CI : m === 'i' ? CV : CR;
+  document.getElementById('sl-desc').textContent = cfg.slDesc;
+
+  const ruleBox = document.getElementById('rule-box');
+  ruleBox.className = 'rule ' + cfg.ruleClass;
+  document.getElementById('rule-title').textContent = cfg.ruleTitle;
+  document.getElementById('rule-text').innerHTML = cfg.ruleText;
+
+  document.getElementById('graph-caption').textContent = cfg.caption;
+
+  updateDisplay();
+}
+
+// ── Update display ─────────────────────────────────────────────────────────
+function updateDisplay() {
+  sliderVal = parseFloat(document.getElementById('main-slider').value);
+  const vals = compute(mode, sliderVal);
+  const cfg = configs[mode];
+
+  // Slider value label
+  document.getElementById('sl-val-display').textContent =
+    sliderVal.toFixed(1) + ' ' + cfg.slUnit;
+  document.getElementById('sl-val-display').style.color =
+    mode === 'v' ? CI : mode === 'i' ? CV : CR;
+
+  // Fixed display boxes
+  const fd = document.getElementById('fixed-display');
+  fd.innerHTML = '';
+
+  function makeBox(label, val, unit, col) {
+    return `<div class="fixed-box">
+      <div class="fb-label">${label}</div>
+      <div class="fb-val" style="color:${col}">${val} ${unit}</div>
+    </div>`;
+  }
+
+  if (mode === 'v') {
+    fd.innerHTML =
+      makeBox('R fija', fixedR.toFixed(1), 'Ω', CR) +
+      makeBox('I slider', sliderVal.toFixed(1), 'A', CI) +
+      makeBox('V = I·R', vals.V.toFixed(2), 'V', CV);
+  } else if (mode === 'i') {
+    fd.innerHTML =
+      makeBox('R fija', fixedR.toFixed(1), 'Ω', CR) +
+      makeBox('V slider', sliderVal.toFixed(1), 'V', CV) +
+      makeBox('I = V/R', vals.I.toFixed(2), 'A', CI);
+  } else {
+    fd.innerHTML =
+      makeBox('V fija', fixedV.toFixed(1), 'V', CV) +
+      makeBox('R slider', sliderVal.toFixed(1), 'Ω', CR) +
+      makeBox('I = V/R', vals.I.toFixed(2), 'A', CI);
+  }
+
+  drawGraph();
+}
+
+document.getElementById('main-slider').addEventListener('input', updateDisplay);
+
+// ── Draw graph ─────────────────────────────────────────────────────────────
+function drawGraph() {
+  const canvas = document.getElementById('graph');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const PAD = { top: 30, right: 30, bottom: 52, left: 58 };
+  const gW = W - PAD.left - PAD.right;
+  const gH = H - PAD.top  - PAD.bottom;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const cfg = configs[mode];
+
+  // Axis ranges
+  let xMax, yMax, xFn, yFn;
+  if (mode === 'v') {
+    xMax = 10; yMax = 10 * fixedR;
+    xFn = x => x;
+    yFn = x => x * fixedR;
+  } else if (mode === 'i') {
+    xMax = 20; yMax = 20 / fixedR;
+    xFn = x => x;
+    yFn = x => x / fixedR;
+  } else {
+    xMax = 10; yMax = fixedV / 0.5;
+    xFn = x => x;
+    yFn = x => fixedV / x;
+  }
+
+  // ── Grid ──
+  ctx.save();
+  ctx.strokeStyle = '#e8e4dc';
+  ctx.lineWidth = 1;
+  const gridN = 5;
+  for (let i = 1; i <= gridN; i++) {
+    const gx = PAD.left + (i / gridN) * gW;
+    const gy = PAD.top  + (i / gridN) * gH;
+    ctx.beginPath(); ctx.moveTo(gx, PAD.top); ctx.lineTo(gx, PAD.top + gH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PAD.left, gy); ctx.lineTo(PAD.left + gW, gy); ctx.stroke();
+  }
+  ctx.restore();
+
+  // ── Axes ──
+  ctx.save();
+  ctx.strokeStyle = '#bbb';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(PAD.left, PAD.top);
+  ctx.lineTo(PAD.left, PAD.top + gH);
+  ctx.lineTo(PAD.left + gW, PAD.top + gH);
+  ctx.stroke();
+  ctx.restore();
+
+  // Axis labels
+  ctx.save();
+  ctx.font = '11px "Rajdhani", sans-serif';
+  ctx.textBaseline = 'middle';
+
+  // Y axis ticks
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#889';
+  for (let i = 0; i <= 5; i++) {
+    const val = (i / 5) * yMax;
+    const py = PAD.top + gH - (i / 5) * gH;
+    ctx.fillText(val.toFixed(1), PAD.left - 6, py);
+    ctx.beginPath();
+    ctx.strokeStyle = '#ccc';
+    ctx.lineWidth = 0.8;
+    ctx.moveTo(PAD.left - 3, py);
+    ctx.lineTo(PAD.left, py);
+    ctx.stroke();
+  }
+
+  // X axis ticks
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  for (let i = 0; i <= 5; i++) {
+    const val = (i / 5) * xMax;
+    const px = PAD.left + (i / 5) * gW;
+    ctx.fillText(val.toFixed(1), px, PAD.top + gH + 6);
+  }
+
+  // Axis labels
+  ctx.fillStyle = cfg.xColor;
+  ctx.font = 'bold 12px "Rajdhani", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText(cfg.xLabel, PAD.left + gW / 2, H - 2);
+
+  ctx.save();
+  ctx.translate(14, PAD.top + gH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillStyle = cfg.yColor;
+  ctx.textBaseline = 'middle';
+  ctx.fillText(cfg.yLabel, 0, 0);
+  ctx.restore();
+
+  ctx.restore();
+
+  // ── Curve ──
+  const STEPS = 200;
+  ctx.save();
+  ctx.beginPath();
+  let first = true;
+  for (let i = 0; i <= STEPS; i++) {
+    const xv = MIN + (i / STEPS) * (xMax - MIN);
+    const yv = yFn(xv);
+    if (yv < 0 || yv > yMax * 1.05) continue;
+    const px = PAD.left + ((xv - 0) / xMax) * gW;
+    const py = PAD.top + gH - (yv / yMax) * gH;
+    first ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    first = false;
+  }
+  ctx.strokeStyle = cfg.yColor;
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // Area under curve
+  ctx.lineTo(PAD.left + gW, PAD.top + gH);
+  ctx.lineTo(PAD.left, PAD.top + gH);
+  ctx.closePath();
+  ctx.fillStyle = cfg.yColor + '18';
+  ctx.fill();
+
+  ctx.restore();
+
+  // ── Current point dot ──
+  const curX = sliderVal;
+  const curY = yFn(curX);
+  const dotPX = PAD.left + (curX / xMax) * gW;
+  const dotPY = PAD.top + gH - Math.min(curY / yMax, 1) * gH;
+
+  // Dashed lines to axes
+  ctx.save();
+  ctx.setLineDash([4, 4]);
+  ctx.strokeStyle = '#bbb';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(dotPX, dotPY);
+  ctx.lineTo(dotPX, PAD.top + gH);
+  ctx.moveTo(dotPX, dotPY);
+  ctx.lineTo(PAD.left, dotPY);
+  ctx.stroke();
+  ctx.restore();
+
+  // Dot
+  ctx.save();
+  ctx.shadowColor = cfg.yColor + '88';
+  ctx.shadowBlur = 10;
+  ctx.beginPath();
+  ctx.arc(dotPX, dotPY, 7, 0, Math.PI * 2);
+  ctx.fillStyle = cfg.yColor;
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.restore();
+
+  // Value label next to dot
+  const yLabel2 = curY.toFixed(2);
+  ctx.save();
+  ctx.font = 'bold 12px "JetBrains Mono", monospace';
+  ctx.fillStyle = cfg.yColor;
+  ctx.textAlign = dotPX > PAD.left + gW * 0.7 ? 'right' : 'left';
+  ctx.textBaseline = dotPY < PAD.top + 20 ? 'top' : 'bottom';
+  ctx.fillText(yLabel2, dotPX + (ctx.textAlign === 'left' ? 10 : -10), dotPY + (ctx.textBaseline === 'top' ? 4 : -4));
+  ctx.restore();
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+setMode('v');
+</script>
+</body>
+</html>
