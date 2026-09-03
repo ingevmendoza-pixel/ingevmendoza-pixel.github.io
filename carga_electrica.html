@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Simulador de Carga y Electrones</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 1rem 0.5rem;
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1rem;
+      width: 100%;
+      max-width: 480px; /* Tamaño ideal para celulares */
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      font-size: 1.15rem;
+      margin-top: 0;
+      margin-bottom: 0.8rem;
+      color: #38bdf8;
+      text-align: center;
+    }
+
+    .tab-buttons {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      flex: 1;
+      background-color: #334155;
+      color: #f8fafc;
+      border: none;
+      padding: 0.65rem 0.3rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: background-color 0.2s;
+    }
+
+    button.active {
+      background-color: #0284c7;
+    }
+
+    .main-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .input-group {
+      margin-bottom: 0.8rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.4rem;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: 6px;
+      border: 1px solid #475569;
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-size: 1rem;
+    }
+
+    .formula-card {
+      background-color: #0f172a;
+      border-left: 4px solid #38bdf8;
+      padding: 0.75rem;
+      border-radius: 4px;
+      min-height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: auto; /* Permite scroll si la fórmula es ancha en celulares chicos */
+    }
+
+    .canvas-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    canvas {
+      background-color: #020617;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Acumulación de Carga Eléctrica</h1>
+    
+    <div class="tab-buttons">
+      <button id="btnEtoC" class="active" onclick="switchMode('eToC')">Electrones (\(N\))</button>
+      <button id="btnCtoE" onclick="switchMode('cToE')">Carga (\(Q\))</button>
+    </div>
+
+    <div class="main-layout">
+      <div>
+        <div id="panelEtoC">
+          <div class="input-group">
+            <label for="inputN">Cantidad de electrones (\(N \times 10^{16}\)):</label>
+            <input type="number" id="inputN" value="93.8" step="1" min="0" oninput="updateCalculation()">
+          </div>
+        </div>
+
+        <div id="panelCtoE" style="display: none;">
+          <div class="input-group">
+            <label for="inputQ">Carga eléctrica total (\(Q\) en Coulombs):</label>
+            <input type="number" id="inputQ" value="0.15" step="0.01" min="0" oninput="updateCalculation()">
+          </div>
+        </div>
+
+        <div class="formula-card">
+          <div id="mathFormulaDisplay">
+            $$Q = \frac{N}{6.25 \times 10^{18} \text{ e}^-/\text{C}}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="canvas-container">
+        <canvas id="tubeCanvas" width="220" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('tubeCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let currentMode = 'eToC';
+    let particles = [];
+    let targetParticleCount = 0;
+
+    const tube = {
+      x: 40,
+      y: 15,
+      width: 140,
+      height: 160
+    };
+
+    function switchMode(mode) {
+      currentMode = mode;
+      document.getElementById('panelEtoC').style.display = mode === 'eToC' ? 'block' : 'none';
+      document.getElementById('panelCtoE').style.display = mode === 'cToE' ? 'block' : 'none';
+      
+      document.getElementById('btnEtoC').classList.toggle('active', mode === 'eToC');
+      document.getElementById('btnCtoE').classList.toggle('active', mode === 'cToE');
+
+      updateCalculation();
+    }
+
+    function updateCalculation() {
+      let q = 0;
+      let nCoeff = 0;
+      let formulaHTML = '';
+
+      if (currentMode === 'eToC') {
+        nCoeff = parseFloat(document.getElementById('inputN').value) || 0;
+        let totalN = nCoeff * Math.pow(10, 16);
+        q = totalN / (6.25 * Math.pow(10, 18));
+        
+        formulaHTML = `$$Q = \\frac{${nCoeff} \\times 10^{16}}{6.25 \\times 10^{18}} = {\\color{#4ade80}${q.toFixed(3)} \\text{ C}}$$`;
+      } else {
+        q = parseFloat(document.getElementById('inputQ').value) || 0;
+        let totalN = q * 6.25 * Math.pow(10, 18);
+
+        let expStr = totalN.toExponential(2);
+        let parts = expStr.split('e+');
+        let base = parts[0];
+        let exp = parts[1] || '0';
+
+        formulaHTML = `$$N = ${q} \\text{ C} \\times 6.25 \\times 10^{18} = {\\color{#4ade80}${base} \\times 10^{${exp}} \\text{ e}^-}$$`;
+      }
+
+      const mathDisplay = document.getElementById('mathFormulaDisplay');
+      mathDisplay.innerHTML = formulaHTML;
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        MathJax.typesetPromise([mathDisplay]);
+      }
+
+      targetParticleCount = Math.min(180, Math.max(0, Math.round(q * 180)));
+      adjustParticleArray();
+    }
+
+    function adjustParticleArray() {
+      while (particles.length < targetParticleCount) {
+        particles.push({
+          x: tube.x + 8 + Math.random() * (tube.width - 16),
+          y: tube.y + 8 + Math.random() * (tube.height - 16),
+          vx: (Math.random() - 0.5) * 1.5,
+          vy: (Math.random() - 0.5) * 1.5,
+          r: 3.5
+        });
+      }
+      while (particles.length > targetParticleCount) {
+        particles.pop();
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 1. Dibujar Contenedor (Tubo)
+      ctx.beginPath();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 3;
+      ctx.moveTo(tube.x, tube.y);
+      ctx.lineTo(tube.x, tube.y + tube.height);
+      ctx.lineTo(tube.x + tube.width, tube.y + tube.height);
+      ctx.lineTo(tube.x + tube.width, tube.y);
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.6)';
+      ctx.fillRect(tube.x, tube.y, tube.width, tube.height);
+
+      // 2. Animación de Electrones
+      for (let p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x - p.r < tube.x + 2 || p.x + p.r > tube.x + tube.width - 2) p.vx *= -1;
+        if (p.y - p.r < tube.y + 2 || p.y + p.r > tube.y + tube.height - 2) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#60a5fa';
+        ctx.fill();
+      }
+
+      // Etiqueta
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Tubo de Electrones', tube.x + tube.width / 2, tube.y + tube.height + 16);
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('load', () => {
+      updateCalculation();
+    });
+
+    draw();
+  </script>
+</body>
+</html>
